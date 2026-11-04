@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.RangManch" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/rm_bg</item>
+        <item name="android:statusBarColor">@color/rm_bg</item>
+        <item name="android:navigationBarColor">@color/rm_bg</item>
+        <item name="android:colorAccent">#10b981</item>
+        <item name="android:windowSplashScreenBackground">@color/rm_bg</item>
+    </style>
+</resources>

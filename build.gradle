@@ -1,0 +1,72 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Optional: -PsiteUrl=https://your-site.workers.dev  (used only for the links people SHARE from the app)
+def siteUrl = (project.findProperty('siteUrl') ?: '').toString().replaceAll('/+$', '')
+def vCode = (System.getenv('VERSION_CODE') ?: project.findProperty('versionCode') ?: '5074').toString().toInteger()
+
+android {
+    namespace 'dev.workers.rangmanch.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'dev.workers.rangmanch.app'
+        minSdk 24
+        targetSdk 34
+        versionCode vCode
+        versionName '50.74'
+        buildConfigField 'String', 'SITE_URL', '"' + siteUrl + '"'
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    signingConfigs {
+        release {
+            if (System.getenv('KEYSTORE_FILE')) {
+                storeFile file(System.getenv('KEYSTORE_FILE'))
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Without a keystore (plain Android Studio run) fall back to the debug key so the build still works.
+            signingConfig System.getenv('KEYSTORE_FILE') ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+
+    // The whole website lives in web.zip (one file). It is unpacked automatically before every build.
+    sourceSets {
+        main {
+            assets.srcDirs = [layout.buildDirectory.dir('web-assets').get().asFile]
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+    implementation 'androidx.browser:browser:1.8.0'
+}
+
+tasks.register('unpackWeb', Copy) {
+    from zipTree(rootProject.file('web.zip'))
+    into layout.buildDirectory.dir('web-assets')
+}
+tasks.named('preBuild') { dependsOn 'unpackWeb' }
