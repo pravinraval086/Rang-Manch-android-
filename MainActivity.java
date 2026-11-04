@@ -24,9 +24,6 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.webkit.WebViewAssetLoader;
 
 import java.io.ByteArrayInputStream;
@@ -235,7 +232,6 @@ public class MainActivity extends Activity {
                 root.addView(view, new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 web.setVisibility(View.GONE);
-                setImmersiveMode(true);
             }
 
             @Override
@@ -304,22 +300,9 @@ public class MainActivity extends Activity {
         root.removeView(customView);
         customView = null;
         web.setVisibility(View.VISIBLE);
-        setImmersiveMode(false);
         if (customViewCallback != null) {
             customViewCallback.onCustomViewHidden();
             customViewCallback = null;
-        }
-    }
-
-    private void setImmersiveMode(boolean on) {
-        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        if (controller != null) {
-            if (on) {
-                controller.hide(WindowInsetsCompat.Type.systemBars());
-                controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-            } else {
-                controller.show(WindowInsetsCompat.Type.systemBars());
-            }
         }
     }
 
@@ -415,5 +398,4 @@ public class MainActivity extends Activity {
             }
         }
     }
-    }
-            
+}
