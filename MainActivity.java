@@ -24,6 +24,9 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.webkit.WebViewAssetLoader;
 
 import java.io.ByteArrayInputStream;
@@ -232,7 +235,7 @@ public class MainActivity extends Activity {
                 root.addView(view, new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 web.setVisibility(View.GONE);
-                setImmersive(true);
+                setImmersiveMode(true);
             }
 
             @Override
@@ -301,25 +304,22 @@ public class MainActivity extends Activity {
         root.removeView(customView);
         customView = null;
         web.setVisibility(View.VISIBLE);
-        setImmersive(false);
+        setImmersiveMode(false);
         if (customViewCallback != null) {
             customViewCallback.onCustomViewHidden();
             customViewCallback = null;
         }
     }
 
-    @SuppressWarnings("deprecation")
-    private void setImmersive(boolean on) {
-        View d = getWindow().getDecorView();
-        if (on) {
-            d.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULL_SCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        } else {
-            d.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    private void setImmersiveMode(boolean on) {
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            if (on) {
+                controller.hide(WindowInsetsCompat.Type.systemBars());
+                controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            } else {
+                controller.show(WindowInsetsCompat.Type.systemBars());
+            }
         }
     }
 
@@ -415,4 +415,5 @@ public class MainActivity extends Activity {
             }
         }
     }
-}
+    }
+            
